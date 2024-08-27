@@ -7,6 +7,9 @@ const Navbar = () => {
       <li>
         <NavLink to={"/"}>Home</NavLink>
       </li>
+      <li className="lg:hidden">
+        <NavLink to={"/login"}>Login</NavLink>
+      </li>
     </>
   );
   return (
@@ -46,8 +49,8 @@ const Navbar = () => {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{NavOptions}</ul>
         </div>
-        <div className="navbar-end">
-          <a className="btn">Get Started</a>
+        <div className="navbar-end hidden lg:flex">
+          <a className="btn" href="/login">Get Started</a>
         </div>
       </div>
     </div>
