@@ -23,7 +23,7 @@ const UpdateUserInfo = (props) => {
     form.append("file", file);
     form.append("upload_preset", "testImage");
     try {
-      //https://api.cloudinary.com/v1_1/dsxboutys/image/upload
+      //https://api.cloudinary.com/v1_1//image/upload
       const response = await axios.post(
         `https://api.cloudinary.com/v1_1/${
           import.meta.env.VITE_CLOUDNAME
