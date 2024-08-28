@@ -1,26 +1,35 @@
 import { Player } from "@lottiefiles/react-lottie-player";
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Providers/AuthProviders";
 import Swal from "sweetalert2";
+import useUserInfoFromMongodb from "../../hooks/useUserInfoFromMongodb";
 
 const Login = () => {
   const { user,googleSignIn,
     signIn, } = useContext(AuthContext);
+    const [websiteUser,refetch]=useUserInfoFromMongodb()
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
+  const navigate=useNavigate();
+
   const onSubmit = async(data) => {
     console.log(data);
     try{
       const ourUser=signIn(data.email, data.password);
       console.log(ourUser)
       if (ourUser) {
+        refetch()
         Swal.fire("Welcome Back...")
+        if (websiteUser?.role) {
+          console.log(websiteUser.role)
+          return navigate(`/dashboard/${websiteUser?.role}Home`)
+        }
       }
     }catch(err){
       console.log(err)
@@ -112,6 +121,14 @@ const Login = () => {
                 </Link>
               </p>
             </form>
+            {websiteUser?.role ?
+              <button className="btn btn-error" onClick={()=>navigate(`/dashboard/${websiteUser?.role}Home`)}>
+              Go To DashBoard
+            </button>
+            : user &&
+            <button className="btn btn-primary" onClick={()=>navigate(`/dashboard/Home`)}>
+              Go To DashBoard
+            </button>}
           </div>
         </div>
       </div>

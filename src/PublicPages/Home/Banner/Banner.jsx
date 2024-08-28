@@ -40,7 +40,7 @@ const Banner = () => {
         "https://lottie.host/30b76a3c-a9c8-4196-862e-a8bf9828ff54/KYan2MGt3s.json",
       description:
         "Getting stuck with searching HIGH TALENTED people ? Come here to sind your RIGHT candidate and develop your company.",
-      loginLink: "/employer/login",
+      loginLink: "/dashboard/login",
     },
     {
       title: "Are you Entrepreneur?",

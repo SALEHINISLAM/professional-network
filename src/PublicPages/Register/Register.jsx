@@ -1,7 +1,7 @@
 import { Player } from "@lottiefiles/react-lottie-player";
 import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Providers/AuthProviders";
 import Swal from "sweetalert2";
 const Register = () => {
@@ -25,6 +25,7 @@ const Register = () => {
       Swal.fire('Some thing went wrong. Please try again...')
     }
   };
+  const navigate=useNavigate()
   return (
     <div>
       <div className="hero bg-base-200 min-h-screen">
@@ -127,6 +128,12 @@ const Register = () => {
                 </Link>
               </p>
             </form>
+            {
+              user && 
+              <button className="btn btn-primary" onClick={()=>navigate('/dashboard/Home')}>
+                Go To Dashboard
+              </button>
+            }
           </div>
         </div>
       </div>

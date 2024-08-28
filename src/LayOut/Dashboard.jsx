@@ -1,14 +1,14 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import EmployerNavbar from "../EmployerPages/Components/EmployerNavbar";
 import Footer from "../PublicPages/Components/Footer";
+import DashboardNavbar from "../UserDashboard/DashboardNavbar";
 
-const EmployerPages = () => {
+const Dashboard = () => {
   return (
     <>
-      <EmployerNavbar />
+      <DashboardNavbar />
       <h2 className="text-center text-5xl font-extrabold">
-        Employer Dashboard
+        Dashboard
       </h2>
       <Outlet />
       <Footer/>
@@ -16,4 +16,4 @@ const EmployerPages = () => {
   );
 };
 
-export default EmployerPages;
+export default Dashboard;
