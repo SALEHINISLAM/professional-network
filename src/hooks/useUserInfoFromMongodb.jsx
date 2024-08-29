@@ -9,13 +9,16 @@ const useUserInfoFromMongodb = () => {
   const { data: websiteUser, isLoading, refetch } = useQuery({
     queryKey: [user?.email, "websiteUser"],
     queryFn: async () => {
+      if(!user?.email){
+        return null
+      }
       const result = await axiosPublic.get(`/user?email=${user?.email}`);
       return result.data;
     },
   });
-  if (isLoading) {
-    return "loading"
-  }
+  // if (isLoading) {
+  //   return "loading"
+  // }
   return [websiteUser,refetch, isLoading];
 };
 

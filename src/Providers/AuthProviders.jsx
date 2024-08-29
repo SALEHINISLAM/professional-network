@@ -18,6 +18,7 @@ const AuthProviders = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const auth = getAuth(app);
+  // const [refetch] = useUserInfoFromMongodb();
 
   const axiosPublic=useAxiosPublic()
 
@@ -77,6 +78,7 @@ const AuthProviders = ({ children }) => {
       setUser(currentUser);
       console.log("current user", currentUser);
       if (currentUser) {
+        //refetch()
         const userInfo={email: currentUser.email}
         axiosPublic.post('/jwt', userInfo)
         .then(res=>{

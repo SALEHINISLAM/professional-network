@@ -20,6 +20,7 @@ const UpdateUserInfo = (props) => {
   if (isLoading) {
     return <span className="loading"></span>
   }
+
   const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
     defaultValues: {
       name: user?.displayName || "",
@@ -137,7 +138,7 @@ const UpdateUserInfo = (props) => {
   const { fields, append, remove } = useFieldArray({ control, name: "skills" });
 
   return (
-    <div>
+    <div className="max-w-sm mx-auto">
       {!websiteUser?.role && (
         <select name="userRole" className="select select-primary w-full max-w-xs" onChange={handleSelect}>
           <option value={"default"}>Select one</option>
@@ -253,6 +254,7 @@ const UpdateUserInfo = (props) => {
         )}
         {(selectedValue === "jobSeeker" || websiteUser?.role=== "jobSeeker") && (
           <>
+          {/* skills */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Skills</span>

@@ -8,7 +8,7 @@ export const employerNavlink = (
     </li>
     {/* view all job and create new job */}
     <li>
-      <NavLink to={"/dashboard/job"}>Manage job posts</NavLink>
+      <NavLink to={"/dashboard/manageJobs"}>Manage job posts</NavLink>
     </li>
     {/* all application and job specific application */}
     <li>
@@ -44,7 +44,7 @@ export const entrepreneurNavlink=<>
     </li>
     {/* view all job and create new job */}
     <li>
-      <NavLink to={"/dashboard/job"}>Manage job posts</NavLink>
+      <NavLink to={"/dashboard/postJob"}>Manage job posts</NavLink>
     </li>
     {/* all application and job specific application */}
     <li>
