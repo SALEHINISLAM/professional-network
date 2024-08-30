@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import { AuthContext } from "../Providers/AuthProviders";
-import useAxiosPublic from "./useAxiosPublic";
+import PropTypes from "prop-types";
+import useAxiosSecure from './useAxiosSecure'
 import { useQuery } from "@tanstack/react-query";
-
-const useAppliedJobs = () => {
+import { AuthContext } from "../Providers/AuthProviders";
+const useLoadApplicants = (props) => {
   const { user } = useContext(AuthContext);
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const { data, isLoading, error } = useQuery({
     queryKey: [user?.email, "JobSeekersJobs"],
     queryFn: async () => {
@@ -13,23 +13,25 @@ const useAppliedJobs = () => {
         return { user: null, jobs: [] };
       }
 
-      const userResult = await axiosPublic.get(`/user?email=${user?.email}`);
+      const userResult = await axiosSecure.get(`/user?email=${user?.email}`);
       const websiteUser = userResult.data;
 
       if (!websiteUser?._id) {
-        console.log("from load job seeker job, showed for user not found");
+        console.log("from load job employer , showed for user not found");
         return { user: websiteUser, jobs: [] };
       }
 
-      const jobResult = await axiosPublic.get(
-        `/jobs/applied/${websiteUser?._id}`
+      const jobResult = await axiosSecure.get(
+        `/employer/${websiteUser?._id}/jobsWithApplicants`
       );
       console.log(jobResult.data, "from job seeker applied jobs ");
       const appliedJobs = jobResult.data;
       return { user: websiteUser, jobs: appliedJobs };
     },
   });
-  return { user: data?.user, appliedJobs: data?.jobs, isLoading, error };
+  return { user: data?.user, jobsWithApplicants: data?.jobs, isLoading, error };
 };
 
-export default useAppliedJobs;
+useLoadApplicants.propTypes = {};
+
+export default useLoadApplicants;

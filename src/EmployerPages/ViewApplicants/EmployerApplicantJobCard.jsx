@@ -1,14 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
-const JobCard = ({ job, price }) => {
-  const { jobData, finalJobPost } = job;
-  const handleShowJobPost=(jobpost)=>{
-    Swal.fire({
-        html:jobpost
-    })
-  }
+const EmployerAppliedJobCard = ({ job, price }) => {
+  const { jobData,numberOfApplications } = job;
   const bgColor = {
     1: "bg-blue-100",
     5: "bg-green-100",
@@ -40,7 +36,9 @@ const JobCard = ({ job, price }) => {
           </p>
           <p>Salary: {jobData.salary} $</p>
           <div className="card-actions">
-            <button className="btn btn-primary" onClick={()=>handleShowJobPost(finalJobPost)}>See Details Post</button>
+            <button className="btn btn-error">Applicants: {numberOfApplications}</button>
+            <Link to={`/dashboard/seeAllCandidate/${job._id}`}>
+            <button className="btn btn-primary">See All Candidate</button></Link>
           </div>
         </div>
       </div>
@@ -48,8 +46,9 @@ const JobCard = ({ job, price }) => {
   );
 };
 
-JobCard.propTypes = {
+EmployerAppliedJobCard.propTypes = {
   job: PropTypes.object,
+  price: PropTypes.number
 };
 
-export default JobCard;
+export default EmployerAppliedJobCard;

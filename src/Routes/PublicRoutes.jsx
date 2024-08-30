@@ -13,6 +13,10 @@ import ManageJobPost from "../EmployerPages/ManageJobPost/ManageJobPost";
 import PastJobs from "../EmployerPages/PastJobs/PastJobs";
 import FindJobs from "../JobSeekerPages/FindJobs/FindJobs";
 import JoDetailsPageForJobSeeker from "../JobSeekerPages/FindJobs/JoDetailsPageForJobSeeker";
+import AppliedJobs from "../JobSeekerPages/AppliedJobs/AppliedJobs";
+import AppliedJobDetails from "../JobSeekerPages/AppliedJobs/AppliedJobDetails";
+import ViewApplicants from "../EmployerPages/ViewApplicants/ViewApplicants";
+import SeeAllCandidate from "../EmployerPages/ViewApplicants/SeeAllCandidate";
 
 const router = createBrowserRouter([
   {
@@ -53,30 +57,46 @@ const router = createBrowserRouter([
       },
       {
         //both employer and entrepreneur
-        path:'manageJobs',
-        element:<ManageJobPost/>
+        path: "manageJobs",
+        element: <ManageJobPost />,
       },
       {
-        path: 'postNewJob',
-        element:<PostJob/>
+        path: "postNewJob",
+        element: <PostJob />,
       },
       {
-        path:'pastJobs',
-        element:<PastJobs/>
+        path: "pastJobs",
+        element: <PastJobs />,
+      },
+      {
+        path:'applicants',
+        element:<ViewApplicants/>
+      },
+      {
+        path:`seeAllCandidate/:id`,
+        element:<SeeAllCandidate/>
       },
       //jobSeeker
       {
-        path:'jobSeekerHome',
-        element:<JobSeekerHome/>
+        path: "jobSeekerHome",
+        element: <JobSeekerHome />,
       },
       {
-        path:'findJobs',
-        element:<FindJobs/>
+        path: "findJobs",
+        element: <FindJobs />,
       },
       {
-        path:'jobDetails/:id',
-        element:<JoDetailsPageForJobSeeker/>
-      }
+        path: "jobDetails/:id",
+        element: <JoDetailsPageForJobSeeker />,
+      },
+      {
+        path: "appliedJobs",
+        element: <AppliedJobs />,
+      },
+      {
+        path: "appliedJobDetails/:id",
+        element: <AppliedJobDetails />,
+      },
     ],
   },
 ]);

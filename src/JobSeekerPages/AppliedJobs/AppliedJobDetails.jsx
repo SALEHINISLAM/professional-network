@@ -1,16 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Link, useParams } from "react-router-dom";
-import useAllJobsJobSeeker from "../../hooks/useAllJobsJobSeeker";
-import ReactQuill from "react-quill";
+import React from 'react';
+import useAppliedJobs from '../../hooks/useAppliedJobs';
+import { Link, useParams } from 'react-router-dom';
+import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import useAxiosPublic from "../../hooks/useAxiosPublic";
-import Swal from "sweetalert2";
 
-const JoDetailsPageForJobSeeker = (props) => {
-  const { id } = useParams();
-  const { user, findJobs, isLoading, error } = useAllJobsJobSeeker();
-  const axiosPublic = useAxiosPublic();
+const AppliedJobDetails = () => {
+    const {id}=useParams()
+    const { user, appliedJobs, isLoading, error } = useAppliedJobs();
   if (isLoading) {
     return <span className="loading">Loading...</span>;
   }
@@ -20,20 +16,9 @@ const JoDetailsPageForJobSeeker = (props) => {
   if (!user) {
     return <span>No user available</span>;
   }
-  const exactJob = findJobs?.find((job) => job._id === id);
-  console.log(exactJob, "from job details");
-  const handleApplyNow = async (userId, jobId) => {
-    console.log(userId, jobId);
-    const response = await axiosPublic.post(`/user/${userId}/job/${jobId}`);
-    console.log(response.data);
-    if (response.data.insertedId) {
-      Swal.fire("Your application is successful...");
-    }else{
-        Swal.fire("something went wrong...")
-    }
-  };
-  return (
-    <div>
+  const exactJob = appliedJobs?.find((job) => job._id === id);
+    return (
+        <div>
       <h2 className="container mx-auto text-4xl font-semibold py-8">
         Job Details
       </h2>
@@ -49,7 +34,7 @@ const JoDetailsPageForJobSeeker = (props) => {
             modules={{ toolbar: false }}
           />
         </div>
-        <div className="">
+        <div>
           <img
             src={exactJob?.jobData.companyLogoUrl}
             alt=""
@@ -91,22 +76,14 @@ const JoDetailsPageForJobSeeker = (props) => {
       </div>
       <div
         hidden={!exactJob}
-        className="pb-20 flex flex-col sm:flex-row gap-6 md:gap-12 lg:gap-16 justify-center items-center"
+        className=" flex flex-col sm:flex-row gap-6 md:gap-12 lg:gap-16 justify-center items-center"
       >
-        <button
-          className="btn btn-primary"
-          onClick={() => handleApplyNow(user?._id, exactJob?._id)}
-        >
-          Apply Now
-        </button>
-        <Link to={"/dashboard/findJobs"}>
+        <Link to={"/dashboard/appliedJobs"}>
           <button className="btn btn-error">Go Back</button>
         </Link>
       </div>
     </div>
-  );
+    );
 };
 
-JoDetailsPageForJobSeeker.propTypes = {};
-
-export default JoDetailsPageForJobSeeker;
+export default AppliedJobDetails;

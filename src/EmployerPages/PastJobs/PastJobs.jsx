@@ -20,7 +20,7 @@ const PastJobs = () => {
             My Posted Jobs
         </h3>
         <div className='container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 py-16'>
-            {jobs? jobs.map((job,index)=><JobCard key={index} job={job}/>) :"No jobs Found"}
+            {jobs? jobs.map((job,index)=><JobCard key={index} job={job} price={parseInt(job.jobData.price)}/>) :"No jobs Found"}
         </div>
         </>
     );

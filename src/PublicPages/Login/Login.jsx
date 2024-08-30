@@ -21,11 +21,11 @@ const Login = () => {
   const onSubmit = async(data) => {
     console.log(data);
     try{
-      const ourUser=signIn(data.email, data.password);
+      const ourUser= signIn(data.email, data.password);
       console.log(ourUser)
       if (ourUser) {
         refetch()
-        Swal.fire("Welcome Back...")
+        //Swal.fire("Welcome Back...")
         if (websiteUser?.role) {
           console.log(websiteUser.role)
           return navigate(`/dashboard/${websiteUser?.role}Home`)
@@ -36,6 +36,9 @@ const Login = () => {
       Swal.fire('Some thing went wrong. Please try again...')
     }
   };
+  {
+    user && Swal.fire('Welcome Back...')
+  }
   return (
     <div>
       <div className="hero bg-base-200 min-h-screen">
