@@ -17,7 +17,16 @@ import AppliedJobs from "../JobSeekerPages/AppliedJobs/AppliedJobs";
 import AppliedJobDetails from "../JobSeekerPages/AppliedJobs/AppliedJobDetails";
 import ViewApplicants from "../EmployerPages/ViewApplicants/ViewApplicants";
 import SeeAllCandidate from "../EmployerPages/ViewApplicants/SeeAllCandidate";
+import ContactPage from "../PublicPages/ContactPage/ContactPage";
+import EntrepreneurHome from "../Entrepreneur/EntepreneurHome/EntrepreneurHome";
+import EntrepreneurInvestment from "../Entrepreneur/Investment/EntrepreneurInvestment";
+import Invest from "../PublicPages/Invest/Invest";
+import useAxiosPublic from "../hooks/useAxiosPublic";
+import AdminHome from "../Admin/AdminHome/AdminHome";
+import AdminLoadJobs from "../Admin/AdminLoadJobs/AdminLoadJobs";
+import AdminAllUsers from "../Admin/AdminAllUsers/AdminAllUsers";
 
+const axiosPublic = useAxiosPublic();
 const router = createBrowserRouter([
   {
     path: "/",
@@ -35,6 +44,10 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
       },
+      {
+        path: "/contact",
+        element: <ContactPage />,
+      },
     ],
   },
   {
@@ -45,6 +58,18 @@ const router = createBrowserRouter([
         //for new user
         path: "Home",
         element: <NewDashboardHome />,
+      },
+      {
+        path: "help",
+        element: <ContactPage />,
+      },
+      {
+        path: "invest",
+        element: <Invest />,
+        loader: async () => {
+          const result = await axiosPublic.get(`/invest`);
+          return result.data;
+        },
       },
       //employer
       {
@@ -69,12 +94,17 @@ const router = createBrowserRouter([
         element: <PastJobs />,
       },
       {
-        path:'applicants',
-        element:<ViewApplicants/>
+        path: "applicants",
+        element: <ViewApplicants />,
       },
       {
-        path:`seeAllCandidate/:id`,
-        element:<SeeAllCandidate/>
+        path: `seeAllCandidate/:id`,
+        element: <SeeAllCandidate />,
+      },
+      //entrepreneur
+      {
+        path: "entrepreneurHome",
+        element: <EntrepreneurHome />,
       },
       //jobSeeker
       {
@@ -97,6 +127,22 @@ const router = createBrowserRouter([
         path: "appliedJobDetails/:id",
         element: <AppliedJobDetails />,
       },
+      {
+        path: "investment",
+        element: <EntrepreneurInvestment />,
+      },
+      {
+        path: "adminHome",
+        element: <AdminHome />,
+      },
+      {
+        path: "allJobs",
+        element: <AdminLoadJobs />,
+      },
+      {
+        path:'allUsers',
+        element:<AdminAllUsers/>
+      }
     ],
   },
 ]);

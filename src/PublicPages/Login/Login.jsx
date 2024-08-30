@@ -36,6 +36,13 @@ const Login = () => {
       Swal.fire('Some thing went wrong. Please try again...')
     }
   };
+  const handleSignInWithGoogle=async()=>{
+    const googleLogin=await googleSignIn()
+    if (websiteUser?.role) {
+      console.log(websiteUser.role)
+      return navigate(`/dashboard/${websiteUser?.role}Home`)
+    }
+  }
   {
     user && Swal.fire('Welcome Back...')
   }
@@ -124,6 +131,11 @@ const Login = () => {
                 </Link>
               </p>
             </form>
+            {
+              <button onClick={()=>handleSignInWithGoogle()} className="btn" disabled={user}>
+                Sign In With Google
+              </button>
+            }
             {websiteUser?.role ?
               <button className="btn btn-error" onClick={()=>navigate(`/dashboard/${websiteUser?.role}Home`)}>
               Go To DashBoard

@@ -138,7 +138,7 @@ const UpdateUserInfo = (props) => {
   const { fields, append, remove } = useFieldArray({ control, name: "skills" });
 
   return (
-    <div className="max-w-sm mx-auto">
+    <div className="max-w-sm mx-auto py-16">
       {!websiteUser?.role && (
         <select name="userRole" className="select select-primary w-full max-w-xs" onChange={handleSelect}>
           <option value={"default"}>Select one</option>

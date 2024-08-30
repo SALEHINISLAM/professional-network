@@ -44,7 +44,7 @@ export const entrepreneurNavlink=<>
     </li>
     {/* view all job and create new job */}
     <li>
-      <NavLink to={"/dashboard/postJob"}>Manage job posts</NavLink>
+      <NavLink to={"/dashboard/manageJobs"}>Manage job posts</NavLink>
     </li>
     {/* all application and job specific application */}
     <li>
@@ -56,4 +56,21 @@ export const entrepreneurNavlink=<>
     <li>
       <NavLink to={"/dashboard/help"}>Help</NavLink>
     </li>
+</>
+export const adminNavLink=<>
+<li>
+  <NavLink to={'/dashboard/adminHome'}>
+    Admin Home
+  </NavLink>
+</li>
+<li>
+  <NavLink to={'/dashboard/allUsers'}>
+    All Users
+  </NavLink>
+</li>
+<li>
+  <NavLink to={'/dashboard/allJobs'}>
+    All Jobs
+  </NavLink>
+</li>
 </>

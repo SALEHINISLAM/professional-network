@@ -14,7 +14,7 @@ const JobCard = ({ job, price }) => {
     5: "bg-green-100",
     10: "bg-yellow-100",
   };
-  const cardClasses = ("card shadow-xl", bgColor[price]);
+  const cardClasses = ("card shadow-xl h-full", bgColor[price]);
   return (
     <div>
       <div className={cardClasses}>

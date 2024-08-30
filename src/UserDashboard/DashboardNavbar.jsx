@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import useUserInfoFromMongodb from "../hooks/useUserInfoFromMongodb";
-import { employerNavlink, jobSeekerNavlink } from "../SharedComponents/DashboardNavlink";
+import { adminNavLink, employerNavlink, entrepreneurNavlink, jobSeekerNavlink } from "../SharedComponents/DashboardNavlink";
 import { AuthContext } from "../Providers/AuthProviders";
+import useAdmin from "../hooks/useAdmin";
 
 const DashboardNavbar = () => {
+  const [isAdmin]=useAdmin()
+  console.log('from dash nav', isAdmin)
   const { logOut } = useContext(AuthContext);
   const [websiteUser, refetch] = useUserInfoFromMongodb();
   const navigate = useNavigate();
@@ -62,8 +65,13 @@ const DashboardNavbar = () => {
             <li>Hi {user?.name}</li>
             {user?.role === "employer" && employerNavlink}
             {user?.role === "jobSeeker" && jobSeekerNavlink}
+            {user?.role==="entrepreneur" && entrepreneurNavlink}
+            {isAdmin && adminNavLink}
             <li>
               <NavLink to={"/dashboard/updateuser"}>Add or Edit Profile</NavLink>
+            </li>
+            <li>
+              <NavLink to={"/dashboard/invest"}>Invest</NavLink>
             </li>
             <li>
               <button onClick={() => handleLogOut()}>Logout</button>

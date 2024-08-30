@@ -7,6 +7,9 @@ const Navbar = () => {
       <li>
         <NavLink to={"/"}>Home</NavLink>
       </li>
+      <li>
+        <NavLink to={"/contact"}>Contact</NavLink>
+      </li>
       <li className="lg:hidden">
         <NavLink to={"/login"}>Login</NavLink>
       </li>
@@ -40,17 +43,23 @@ const Navbar = () => {
               {NavOptions}
             </ul>
           </div>
-          {/* 
- */}
+          {/*
+           */}
           <a className="btn btn-ghost text-xl h-full" href="/">
-            <img src="https://i.ibb.co/wzQv92d/pnlogo.jpg" alt="" className="h-full w-full"/>
+            <img
+              src="https://i.ibb.co/wzQv92d/pnlogo.jpg"
+              alt=""
+              className="h-full w-full"
+            />
           </a>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{NavOptions}</ul>
         </div>
         <div className="navbar-end hidden lg:flex">
-          <a className="btn" href="/login">Get Started</a>
+          <a className="btn" href="/login">
+            Get Started
+          </a>
         </div>
       </div>
     </div>

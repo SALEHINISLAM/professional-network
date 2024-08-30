@@ -32,7 +32,7 @@ const EmployerHome = (props) => {
     }, 0);
     return totalApplicants;
   };
-  //https://d1jj76g3lut4fe.cloudfront.net/saved_colors/98631/3dmdV77PclkcKkEA.json
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 container mx-auto">
       <div className="lg:col-span-2">
