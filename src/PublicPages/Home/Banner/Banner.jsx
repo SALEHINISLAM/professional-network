@@ -24,7 +24,7 @@ const Banner = () => {
         "https://lottie.host/a43fb890-5ef4-4d77-aa05-1ce880626035/Q2ZZ1hdeuE.json",
       description:
         "Get started with us to unlocked you TRUE POTENTIAL and discover the LARGE JOB market waiting for you.",
-      loginLink: "/employee/login",
+      loginLink: "/login",
     },
     {
       title: "Are you Job Seeker?",
@@ -32,7 +32,7 @@ const Banner = () => {
         "https://lottie.host/744b629e-0c08-4ef7-bafd-efa053d9d246/iyxYKT1cF0.json",
       description:
         "Get started with us to unlocked you TRUE POTENTIAL and discover the LARGE JOB market waiting for you.",
-      loginLink: "/employee/login",
+      loginLink: "/login",
     },
     {
       title: "Are you Employer?",
@@ -40,7 +40,7 @@ const Banner = () => {
         "https://lottie.host/30b76a3c-a9c8-4196-862e-a8bf9828ff54/KYan2MGt3s.json",
       description:
         "Getting stuck with searching HIGH TALENTED people ? Come here to sind your RIGHT candidate and develop your company.",
-      loginLink: "/dashboard/login",
+      loginLink: "/login",
     },
     {
       title: "Are you Entrepreneur?",
@@ -48,7 +48,7 @@ const Banner = () => {
         "https://lottie.host/efc48875-08bb-4813-a198-427ef482f6dd/Vd1qLkUvgC.json",
       description:
         "Search the correct co-founder for your business growth, connect the right investor to boost your future TRILLION DOLLAR business.",
-      loginLink: "/entrepreneur/login",
+      loginLink: "/login",
     },
   ];
   return (
