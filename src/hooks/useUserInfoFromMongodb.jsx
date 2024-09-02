@@ -16,10 +16,7 @@ const useUserInfoFromMongodb = () => {
       return result.data;
     },
   });
-  // if (isLoading) {
-  //   return "loading"
-  // }
-  return [websiteUser,refetch, isLoading];
+  return [websiteUser, refetch, isLoading];
 };
 
 export default useUserInfoFromMongodb;

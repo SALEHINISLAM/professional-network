@@ -10,52 +10,52 @@ import useUserInfoFromMongodb from "../../hooks/useUserInfoFromMongodb";
 const UpdateUserInfo = (props) => {
   const { user } = useContext(AuthContext);
   const [websiteUser, refetch, isLoading] = useUserInfoFromMongodb();
-  const [selectedValue, setSelectedValue] = useState(null);
+  const [selectedValue, setSelectedValue] = useState("");
   const [companyLogo, setCompanyLogo] = useState(null);
   const [IdCard, setIdCard] = useState(null);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [resume, setResume] = useState(null);
   const axiosPublic = useAxiosPublic();
 
-  if (isLoading) {
-    return <span className="loading"></span>
-  }
+  // if (isLoading) {
+  //   return <span className="loading"></span>
+  // }
 
   const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
     defaultValues: {
       name: user?.displayName || "",
       email: user?.email || "",
-      companyName: websiteUser?.companyName || "",
-      designation: websiteUser?.designation || "",
-      companyAddress: websiteUser?.companyAddress || "",
-      companyWebsite: websiteUser?.companyWebsite || "",
-      skills: websiteUser?.skills || [{ name: "" }],
-      contactNumber: websiteUser?.contactNumber || "",
-      userAddress: websiteUser?.userAddress || "",
-      jobExperience: websiteUser?.jobExperience || "",
-      date: websiteUser?.date || "",
-      portfolio: websiteUser?.portfolio || ""
+      companyName: "",
+      designation: "",
+      companyAddress: "",
+      companyWebsite: "",
+      skills: [{ name: "" }],
+      contactNumber: "",
+      userAddress: "",
+      jobExperience: "",
+      date: "",
+      portfolio: ""
     }
   });
 
   useEffect(() => {
     if (websiteUser) {
-      setSelectedValue(websiteUser.role);
+      setSelectedValue(websiteUser.role || "");
       // default values for existing user
       setValue("name", user?.displayName)
       setValue("email", user?.email)
-      setValue("companyName", websiteUser.companyName);
-      setValue("designation", websiteUser.designation);
-      setValue("companyAddress", websiteUser.companyAddress);
-      setValue("companyWebsite", websiteUser.companyWebsite);
+      setValue("companyName", websiteUser.companyName || "");
+      setValue("designation", websiteUser.designation || "");
+      setValue("companyAddress", websiteUser.companyAddress || "");
+      setValue("companyWebsite", websiteUser.companyWebsite || "");
       setValue("skills", websiteUser.skills || [{ name: "" }]);
-      setValue("contactNumber", websiteUser.contactNumber);
-      setValue("userAddress", websiteUser.userAddress);
-      setValue("jobExperience", websiteUser.jobExperience);
-      setValue("date", websiteUser.date);
-      setValue("portfolio", websiteUser.portfolio);
+      setValue("contactNumber", websiteUser.contactNumber || "");
+      setValue("userAddress", websiteUser.userAddress || "");
+      setValue("jobExperience", websiteUser.jobExperience || "");
+      setValue("date", websiteUser.date || "");
+      setValue("portfolio", websiteUser.portfolio || "");
     }
-  }, [websiteUser,user, setValue]);
+  }, [websiteUser, user, setValue]);
 
   const handleFileChange = (e, setFile) => {
     const file = e.target.files[0];

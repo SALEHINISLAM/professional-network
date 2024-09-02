@@ -20,7 +20,7 @@ const DashboardNavbar = () => {
 
   useEffect(() => {
     setUser(websiteUser);
-    console.log(websiteUser.role);
+    console.log(websiteUser?.role);
   }, [websiteUser]);
 
   const handleLogOut = async () => {

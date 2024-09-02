@@ -1,7 +1,7 @@
 import { Player } from "@lottiefiles/react-lottie-player";
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Providers/AuthProviders";
 import Swal from "sweetalert2";
 import useUserInfoFromMongodb from "../../hooks/useUserInfoFromMongodb";
@@ -17,7 +17,8 @@ const Login = () => {
     formState: { errors },
   } = useForm();
   const navigate=useNavigate();
-
+const location=useLocation();
+const from = location.state?.from?.pathname || "/dashboard/Home";
   const onSubmit = async(data) => {
     console.log(data);
     try{
@@ -28,7 +29,7 @@ const Login = () => {
         //Swal.fire("Welcome Back...")
         if (websiteUser?.role) {
           console.log(websiteUser.role)
-          return navigate(`/dashboard/${websiteUser?.role}Home`)
+          return navigate(`/dashboard/${websiteUser && websiteUser.role}Home`)
         }
       }
     }catch(err){
@@ -45,6 +46,12 @@ const Login = () => {
   }
   {
     user && Swal.fire('Welcome Back...')
+  }
+  {
+    websiteUser && navigate(`/dashboard/${websiteUser.role}Home`)
+  }
+  {
+    user && navigate('/dashboard/Home')
   }
   return (
     <div>

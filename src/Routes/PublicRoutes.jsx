@@ -25,6 +25,7 @@ import useAxiosPublic from "../hooks/useAxiosPublic";
 import AdminHome from "../Admin/AdminHome/AdminHome";
 import AdminLoadJobs from "../Admin/AdminLoadJobs/AdminLoadJobs";
 import AdminAllUsers from "../Admin/AdminAllUsers/AdminAllUsers";
+import PrivateRoutes from "./PrivateRoutes";
 
 const axiosPublic = useAxiosPublic();
 const router = createBrowserRouter([
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: <PrivateRoutes><Dashboard /></PrivateRoutes> ,
     children: [
       {
         //for new user

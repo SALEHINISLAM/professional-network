@@ -40,7 +40,7 @@ export const jobSeekerNavlink = (
 
 export const entrepreneurNavlink=<>
 <li>
-      <NavLink to={"/dashboard/entrepreneurHome"}>Employer Home</NavLink>
+      <NavLink to={"/dashboard/entrepreneurHome"}>Entrepreneur Home</NavLink>
     </li>
     {/* view all job and create new job */}
     <li>
