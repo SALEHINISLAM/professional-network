@@ -1,5 +1,5 @@
 import { Player } from "@lottiefiles/react-lottie-player";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Providers/AuthProviders";
@@ -7,52 +7,61 @@ import Swal from "sweetalert2";
 import useUserInfoFromMongodb from "../../hooks/useUserInfoFromMongodb";
 
 const Login = () => {
-  const { user,googleSignIn,
-    signIn, } = useContext(AuthContext);
-    const [websiteUser,refetch]=useUserInfoFromMongodb()
+  const { user, googleSignIn, signIn } = useContext(AuthContext);
+  const [websiteUser, refetch] = useUserInfoFromMongodb();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-  const navigate=useNavigate();
-const location=useLocation();
-const from = location.state?.from?.pathname || "/dashboard/Home";
-  const onSubmit = async(data) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dashboard/Home";
+  useEffect(() => {
+    if (user && websiteUser) {
+      if (websiteUser.role) {
+        navigate(`/dashboard/${websiteUser.role}Home`);
+      } else {
+        navigate("/dashboard/Home");
+      }
+    }
+  }, [user, websiteUser, navigate]);
+
+  const onSubmit = async (data) => {
     console.log(data);
-    try{
-      const ourUser= signIn(data.email, data.password);
-      console.log(ourUser)
+    try {
+      const ourUser = signIn(data.email, data.password);
+      console.log(ourUser);
       if (ourUser) {
-        refetch()
+        await refetch();
         //Swal.fire("Welcome Back...")
-        if (websiteUser?.role) {
-          console.log(websiteUser.role)
-          return navigate(`/dashboard/${websiteUser && websiteUser.role}Home`)
+        if (!websiteUser?.role) {
+          //console.log(websiteUser.role);
+          navigate(`/dashboard/Home`);
         }
       }
-    }catch(err){
-      console.log(err)
-      Swal.fire('Some thing went wrong. Please try again...')
+    } catch (err) {
+      console.log(err);
+      Swal.fire("Some thing went wrong. Please try again...");
     }
   };
-  const handleSignInWithGoogle=async()=>{
-    const googleLogin=await googleSignIn()
-    if (websiteUser?.role) {
-      console.log(websiteUser.role)
-      return navigate(`/dashboard/${websiteUser?.role}Home`)
+
+  const handleSignInWithGoogle = async () => {
+    try {
+      await googleSignIn();
+      await refetch();
+      if (websiteUser?.role) {
+        navigate(`/dashboard/${websiteUser.role}Home`);
+      } else {
+        navigate(`/dashboard/Home`);
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire("Something went wrong");
     }
-  }
-  {
-    user && Swal.fire('Welcome Back...')
-  }
-  {
-    websiteUser && navigate(`/dashboard/${websiteUser.role}Home`)
-  }
-  {
-    user && navigate('/dashboard/Home')
-  }
+  };
+
   return (
     <div>
       <div className="hero bg-base-200 min-h-screen">
@@ -139,18 +148,31 @@ const from = location.state?.from?.pathname || "/dashboard/Home";
               </p>
             </form>
             {
-              <button onClick={()=>handleSignInWithGoogle()} className="btn" disabled={user}>
+              <button
+                onClick={() => handleSignInWithGoogle()}
+                className="btn"
+                disabled={user}
+              >
                 Sign In With Google
               </button>
             }
-            {websiteUser?.role ?
-              <button className="btn btn-error" onClick={()=>navigate(`/dashboard/${websiteUser?.role}Home`)}>
-              Go To DashBoard
-            </button>
-            : user &&
-            <button className="btn btn-primary" onClick={()=>navigate(`/dashboard/Home`)}>
-              Go To DashBoard
-            </button>}
+            {websiteUser?.role ? (
+              <button
+                className="btn btn-error"
+                onClick={() => navigate(`/dashboard/${websiteUser?.role}Home`)}
+              >
+                Go To DashBoard
+              </button>
+            ) : (
+              user && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate(`/dashboard/Home`)}
+                >
+                  Go To DashBoard
+                </button>
+              )
+            )}
           </div>
         </div>
       </div>

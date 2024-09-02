@@ -20,7 +20,7 @@ const AuthProviders = ({ children }) => {
   const auth = getAuth(app);
   // const [refetch] = useUserInfoFromMongodb();
 
-  const axiosPublic=useAxiosPublic()
+  const axiosPublic = useAxiosPublic();
 
   const createUser = async (email, password, displayName) => {
     setLoading(true);
@@ -38,7 +38,7 @@ const AuthProviders = ({ children }) => {
       return userCredential.user;
     } catch (error) {
       console.log(error);
-      return ;
+      return null;
     }
   };
 
@@ -51,14 +51,19 @@ const AuthProviders = ({ children }) => {
         }
       );
     } catch (err) {
-      console.log(err)
-      return
+      console.log(err);
+      return null;
     }
   };
 
-  const logOut = () => {
+  const logOut = async () => {
     setLoading(true);
-    return signOut(auth);
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const googleSignIn = async () => {
@@ -66,34 +71,37 @@ const AuthProviders = ({ children }) => {
     const googleProviders = new GoogleAuthProvider();
     try {
       signInWithPopup(auth, googleProviders).then((userCredential) => {
+        setUser(userCredential.user);
         return userCredential.user;
       });
     } catch (err) {
       console.log(err);
-      return
+      return null;
     }
   };
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       console.log("current user", currentUser);
       if (currentUser) {
         //refetch()
-        const userInfo={email: currentUser.email}
-        axiosPublic.post('/jwt', userInfo)
-        .then(res=>{
-          console.log('jwt response',res.data)
-          if (res.data.token) {
-            localStorage.setItem('access-token', res.data.token)
-          }
-          else{
-            localStorage.removeItem('access-token')
-          }
-        })
-        .catch(error=>{
-          console.log(error)
-        })
+        const userInfo = { email: currentUser.email };
+        axiosPublic
+          .post("/jwt", userInfo)
+          .then((res) => {
+            console.log("jwt response", res.data);
+            if (res.data.token) {
+              localStorage.setItem("access-token", res.data.token);
+            } else {
+              localStorage.removeItem("access-token");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }else{
+        localStorage.removeItem('access-token')
       }
       setLoading(false);
     });
