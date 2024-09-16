@@ -100,8 +100,6 @@ const AuthProviders = ({ children }) => {
           .catch((error) => {
             console.log(error);
           });
-      }else{
-        localStorage.removeItem('access-token')
       }
       setLoading(false);
     });

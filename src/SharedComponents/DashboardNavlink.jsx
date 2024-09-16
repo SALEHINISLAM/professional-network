@@ -33,6 +33,12 @@ export const jobSeekerNavlink = (
       <NavLink to={"/dashboard/appliedJobs"}>Applied Jobs</NavLink>
     </li>
     <li>
+      <NavLink to={"/dashboard/myCV"}>My CV</NavLink>
+    </li>
+    <li>
+      <NavLink to={"/dashboard/editCV"}>editCV</NavLink>
+    </li>
+    <li>
       <NavLink to={"/dashboard/help"}>help</NavLink>
     </li>
   </>

@@ -26,6 +26,8 @@ import AdminHome from "../Admin/AdminHome/AdminHome";
 import AdminLoadJobs from "../Admin/AdminLoadJobs/AdminLoadJobs";
 import AdminAllUsers from "../Admin/AdminAllUsers/AdminAllUsers";
 import PrivateRoutes from "./PrivateRoutes";
+import CustomCV from "../JobSeekerPages/AICvBuilder/pages/CustomCV";
+import PreviewCV from "../JobSeekerPages/AICvBuilder/PreviewCV";
 
 const axiosPublic = useAxiosPublic();
 const router = createBrowserRouter([
@@ -143,6 +145,14 @@ const router = createBrowserRouter([
       {
         path:'allUsers',
         element:<AdminAllUsers/>
+      },
+      {
+        path:'myCV',
+        element:<PreviewCV/>
+      },
+      {
+        path:'editCV',
+        element:<CustomCV/>
       }
     ],
   },

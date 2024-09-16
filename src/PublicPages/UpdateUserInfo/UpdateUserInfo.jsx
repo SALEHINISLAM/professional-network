@@ -6,22 +6,56 @@ import axios from "axios";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import useUserInfoFromMongodb from "../../hooks/useUserInfoFromMongodb";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { WorkSummaryChatSession } from "../../CVServiceApi/WorkSummery";
 
 const UpdateUserInfo = (props) => {
   const { user } = useContext(AuthContext);
+  const formField = {
+    id: null,
+    title: "",
+    companyName: "",
+    district: "",
+    division: "",
+    startDate: "",
+    endDate: "",
+    currentlyWorking: false,
+    workSummery: "",
+  };
   const [websiteUser, refetch, isLoading] = useUserInfoFromMongodb();
   const [selectedValue, setSelectedValue] = useState("");
   const [companyLogo, setCompanyLogo] = useState(null);
   const [IdCard, setIdCard] = useState(null);
   const [profilePhoto, setProfilePhoto] = useState(null);
-  const [resume, setResume] = useState(null);
+  const [hasWorkExperience, setHasWorkExperience] = useState("no");
+  const [workSummery, setWorkSummery] = useState("");
+  const [experienceList, setExperienceList] = useState([formField]);
+  const [educationalList, setEducationalList] = useState([
+    {
+      universityName: "",
+      degree: "",
+      major: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+    },
+  ]);
+  const [skillsList, setSkillsList] = useState([
+    {
+      name: "",
+      rating: "",
+    },
+  ]);
   const axiosPublic = useAxiosPublic();
 
-  // if (isLoading) {
-  //   return <span className="loading"></span>
-  // }
-
-  const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       name: user?.displayName || "",
       email: user?.email || "",
@@ -29,33 +63,172 @@ const UpdateUserInfo = (props) => {
       designation: "",
       companyAddress: "",
       companyWebsite: "",
-      skills: [{ name: "" }],
       contactNumber: "",
       userAddress: "",
       jobExperience: "",
       date: "",
-      portfolio: ""
-    }
+      portfolio: "",
+    },
   });
 
   useEffect(() => {
     if (websiteUser) {
       setSelectedValue(websiteUser.role || "");
       // default values for existing user
-      setValue("name", user?.displayName)
-      setValue("email", user?.email)
+      setValue("name", user?.displayName);
+      setValue("email", user?.email);
       setValue("companyName", websiteUser.companyName || "");
       setValue("designation", websiteUser.designation || "");
       setValue("companyAddress", websiteUser.companyAddress || "");
       setValue("companyWebsite", websiteUser.companyWebsite || "");
-      setValue("skills", websiteUser.skills || [{ name: "" }]);
+      setValue(
+        "skills",
+        websiteUser.skills || [
+          {
+            name: "",
+            rating: "",
+          },
+        ]
+      );
       setValue("contactNumber", websiteUser.contactNumber || "");
       setValue("userAddress", websiteUser.userAddress || "");
       setValue("jobExperience", websiteUser.jobExperience || "");
       setValue("date", websiteUser.date || "");
       setValue("portfolio", websiteUser.portfolio || "");
+      setValue("experience", websiteUser.experience || [formField]);
+      setValue(
+        "education",
+        websiteUser.education || [
+          {
+            universityName: "",
+            degree: "",
+            major: "",
+            startDate: "",
+            endDate: "",
+            description: "",
+          },
+        ]
+      );
+      setEducationalList(
+        websiteUser.education || [
+          {
+            universityName: "",
+            degree: "",
+            major: "",
+            startDate: "",
+            endDate: "",
+            description: "",
+          },
+        ]
+      );
+      setExperienceList(websiteUser.experience || [formField]);
+      setSkillsList(
+        websiteUser.skills || [
+          {
+            name: "",
+            rating: "",
+          },
+        ]
+      );
     }
   }, [websiteUser, user, setValue]);
+
+  const GenerateWorkSummeryFromAI = async (e,index) => {
+    e.preventDefault()
+    if (!experienceList[index].title) {
+      return Swal.fire("Please add position title");
+    }
+    const PROMPT = `Position Title: ${experienceList[index].title}. Based on this position title, provide 5-7 bullet points for my experience in a resume, in HTML format.`;
+    console.log(PROMPT);
+    try {
+      const result = await WorkSummaryChatSession.sendMessage(PROMPT);
+      const responseText = await result.response.text();
+      console.log("AI Response:", responseText);
+      setWorkSummery(responseText);
+    } catch (error) {
+      console.error("Error in AI generation:", error);
+      Swal.fire("Error generating summery from AI");
+    }
+  };
+
+  const handleSkillChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedSkillsList = [...skillsList];
+    updatedSkillsList[index] = {
+      ...updatedSkillsList[index],
+      [name]: value,
+    };
+    setSkillsList(updatedSkillsList);
+  };
+
+  const handleExperienceChange = (index, event) => {
+    const { name, value, type, checked } = event.target;
+    const updatedExperienceList = [...experienceList];
+    updatedExperienceList[index] = {
+      ...updatedExperienceList[index],
+      [name]: type === "checkbox" ? checked : value,
+    };
+    setExperienceList(updatedExperienceList);
+  };
+
+  const handleEducationChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedEducationList = [...educationalList];
+    updatedEducationList[index] = {
+      ...updatedEducationList[index],
+      [name]: value,
+    };
+    setEducationalList(updatedEducationList);
+  };
+
+  const handleWorkSummery=(index)=>{
+    const UpdateExperienceList=[...experienceList];
+    UpdateExperienceList[index].workSummery=workSummery;
+  }
+  const addNewExperience = () => {
+    setExperienceList([...experienceList, { ...formField }]);
+  };
+
+  const handleAddSkill = () => {
+    const updatedList = [
+      ...skillsList,
+      {
+        name: "",
+        rating: "",
+      },
+    ];
+    setSkillsList(updatedList);
+  };
+
+  const handleRemoveExperience = (index) => {
+    const updatedExperienceList = experienceList.filter((_, i) => i !== index);
+    setExperienceList(updatedExperienceList);
+  };
+
+  const handleAddEducation = () => {
+    const updatedList = [
+      ...educationalList,
+      {
+        universityName: "",
+        degree: "",
+        major: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+      },
+    ];
+    setEducationalList(updatedList);
+  };
+
+  const handleRemoveEducation = (index) => {
+    const updatedList = educationalList.filter((_, i) => i !== index);
+    setEducationalList(updatedList);
+  };
+
+  const handleRemoveSkill = (index) => {
+    const updatedList = skillsList.filter((_, i) => i !== index);
+    setSkillsList(updatedList);
+  };
 
   const handleFileChange = (e, setFile) => {
     const file = e.target.files[0];
@@ -64,7 +237,7 @@ const UpdateUserInfo = (props) => {
 
   const handleSelect = (e) => {
     setSelectedValue(e.target.value);
-    console.log(e.target.value)
+    console.log(e.target.value);
   };
 
   const handleUploadImage = async (file) => {
@@ -73,7 +246,9 @@ const UpdateUserInfo = (props) => {
     form.append("upload_preset", "testImage");
     try {
       const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDNAME}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUDNAME
+        }/image/upload`,
         form
       );
       return response.data.secure_url;
@@ -83,11 +258,11 @@ const UpdateUserInfo = (props) => {
   };
 
   const onSubmit = async (data) => {
+
     try {
       let logoUrl = websiteUser?.companyLogoUrl || "";
       let idCardUrl = websiteUser?.employerIdCardUrl || "";
       let userProfilePhoto = websiteUser?.userProfilePhotoURL || "";
-      let userResumeURL = websiteUser?.userResumeURL || "";
 
       if (companyLogo) {
         logoUrl = await handleUploadImage(companyLogo);
@@ -98,9 +273,6 @@ const UpdateUserInfo = (props) => {
       if (profilePhoto) {
         userProfilePhoto = await handleUploadImage(profilePhoto);
       }
-      if (resume) {
-        userResumeURL = await handleUploadImage(resume);
-      }
 
       const message = {
         ...data,
@@ -108,16 +280,22 @@ const UpdateUserInfo = (props) => {
         employerIdCardUrl: idCardUrl,
         companyLogoUrl: logoUrl,
         userProfilePhotoURL: userProfilePhoto,
-        userResumeURL: userResumeURL,
+        experience: experienceList,
+        skills: skillsList,
+        education: educationalList,
       };
-
+      console.log(message);
       if (websiteUser?.role) {
-        const response = await axiosPublic.put(`/userInfo/edit/${websiteUser._id}`, message, {
-          headers: { "Content-Type": "application/json" }
-        });
+        const response = await axiosPublic.put(
+          `/userInfo/edit/${websiteUser._id}`,
+          message,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
         if (response.data.modifiedCount > 0) {
           Swal.fire("Your information updated successfully...");
-          refetch(); // Refetch user info 
+          refetch(); // Refetch user info
         } else {
           Swal.fire("Something went wrong...");
         }
@@ -134,13 +312,36 @@ const UpdateUserInfo = (props) => {
       console.log(err, "from update user");
     }
   };
+  const handleWorkExperienceSelection = (e) => {
+    setHasWorkExperience(e.target.value);
+    console.log(hasWorkExperience);
+  };
 
-  const { fields, append, remove } = useFieldArray({ control, name: "skills" });
-
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      ["clean"],
+    ],
+    clipboard: {
+      matchVisual: false,
+    },
+  };
   return (
     <div className="max-w-sm mx-auto py-16">
       {!websiteUser?.role && (
-        <select name="userRole" className="select select-primary w-full max-w-xs" onChange={handleSelect}>
+        <select
+          name="userRole"
+          className="select select-primary w-full max-w-xs"
+          onChange={handleSelect}
+        >
           <option value={"default"}>Select one</option>
           <option value={"jobSeeker"}>Job Seeker</option>
           <option value={"employer"}>Employer (Job Provider)</option>
@@ -149,14 +350,28 @@ const UpdateUserInfo = (props) => {
       )}
       <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
         <div className="form-control">
-          <label className="label"><span className="label-text">Name</span></label>
-          <input type="text" defaultValue={user?.displayName} className="input input-bordered" readOnly />
+          <label className="label">
+            <span className="label-text">Name</span>
+          </label>
+          <input
+            type="text"
+            defaultValue={user?.displayName}
+            className="input input-bordered"
+            readOnly
+          />
         </div>
         <div className="form-control">
-          <label className="label"><span className="label-text">Email</span></label>
-          <input type="email" defaultValue={user?.email} className="input input-bordered" readOnly />
+          <label className="label">
+            <span className="label-text">Email</span>
+          </label>
+          <input
+            type="email"
+            defaultValue={user?.email}
+            className="input input-bordered"
+            readOnly
+          />
         </div>
-        {(selectedValue === "employer" || websiteUser?.role ==='employer') && (
+        {(selectedValue === "employer" || websiteUser?.role === "employer") && (
           <>
             <div className="form-control">
               <label className="label">
@@ -211,173 +426,481 @@ const UpdateUserInfo = (props) => {
                 {...register("companyWebsite")}
               />
             </div>
-            {!websiteUser?.userProfilePhotoURL && <div className="form-control">
-              <label className="label">
-                <span className="label-text">Profile Photo</span>
-              </label>
-              <input
-                type="file"
-                name="profilePhoto"
-                className="file-input file-input-bordered w-full max-w-xs"
-                required
-                onChange={(e) => handleFileChange(e, setProfilePhoto)}
-              />
-            </div>}
-             {!websiteUser?.companyLogoUrl && <div className="form-control">
-              <label className="label">
-                <span className="label-text">Upload Your Company logo</span>
-              </label>
-              <input
-                type="file"
-                name="companyLogo"
-                className="file-input file-input-bordered w-full max-w-xs"
-                required
-                onChange={(e) => handleFileChange(e, setCompanyLogo)}
-              />
-            </div>}
-            {!websiteUser?.employerIdCardUrl && <div className="form-control">
-              <label className="label">
-                <span className="label-text">
-                  Upload Your ID card card(It is required to verify yourself as
-                  a representative of your company)
-                </span>
-              </label>
-              <input
-                type="file"
-                name="idCard"
-                className="file-input file-input-bordered w-full max-w-xs"
-                required
-                onChange={(e) => handleFileChange(e, setIdCard)}
-              />
-            </div>}
+            {!websiteUser?.userProfilePhotoURL && (
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Profile Photo</span>
+                </label>
+                <input
+                  type="file"
+                  name="profilePhoto"
+                  className="file-input file-input-bordered w-full max-w-xs"
+                  required
+                  onChange={(e) => handleFileChange(e, setProfilePhoto)}
+                />
+              </div>
+            )}
+            {!websiteUser?.companyLogoUrl && (
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Upload Your Company logo</span>
+                </label>
+                <input
+                  type="file"
+                  name="companyLogo"
+                  className="file-input file-input-bordered w-full max-w-xs"
+                  required
+                  onChange={(e) => handleFileChange(e, setCompanyLogo)}
+                />
+              </div>
+            )}
+            {!websiteUser?.employerIdCardUrl && (
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">
+                    Upload Your ID card card(It is required to verify yourself
+                    as a representative of your company)
+                  </span>
+                </label>
+                <input
+                  type="file"
+                  name="idCard"
+                  className="file-input file-input-bordered w-full max-w-xs"
+                  required
+                  onChange={(e) => handleFileChange(e, setIdCard)}
+                />
+              </div>
+            )}
           </>
         )}
-        {(selectedValue === "jobSeeker" || websiteUser?.role=== "jobSeeker") && (
+        {(selectedValue === "jobSeeker" ||
+          websiteUser?.role === "jobSeeker") && (
           <>
-          {/* skills */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Skills</span>
+            <h1 className="font-bold text-3xl">Personal Information</h1>
+            <div className="">
+              <div className="form-control">
+                <label className="label-text">First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="first name"
+                  className="input input-bordered"
+                  {...register("firstName")}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">Last Name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="last name"
+                  className="input input-bordered"
+                  {...register("lastName")}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">Job Title</label>
+                <input
+                  type="text"
+                  name="jobTitle"
+                  placeholder="programmer"
+                  className="input input-bordered"
+                  {...register("jobTitle")}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="address"
+                  className="input input-bordered"
+                  {...register("address")}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">Phone</label>
+                <input
+                  type="number"
+                  name="phone"
+                  placeholder="+8801XXXXXXXXX"
+                  className="input input-bordered"
+                  {...register("phone")}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">Email</label>
+                <input
+                  type="email"
+                  name="userEmail"
+                  placeholder="xyz@domain.com"
+                  className="input input-bordered"
+                  {...register("userEmail")}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">Portfolio Website(Optional But IMPORTANT for Recruiter)</label>
+                <input
+                  type="text"
+                  name="portfolio"
+                  placeholder="domain.com"
+                  className="input input-bordered"
+                  {...register("portfolio")}
+                  
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">LinkedIn(Optional But IMPORTANT for Recruiter)</label>
+                <input
+                  type="text"
+                  name="linkedIn"
+                  placeholder="linkedin.com/xxxxx"
+                  className="input input-bordered"
+                  
+                  {...register("linkedIn")}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text">Facebook(Optional But IMPORTANT for Recruiter)</label>
+                <input
+                  type="text"
+                  name="facebook"
+                  placeholder="facebook.com/xxxxxx"
+                  
+                  className="input input-bordered"
+                  {...register("facebook")}
+                />
+              </div>
+            </div>
+            <h1 className="font-bold text-lg">Work Experience</h1>
+            <p>Do you have previous job experience?</p>
+            <div className="my-4">
+              <label className="label-text">
+                <input
+                  type="radio"
+                  name="hasExperience"
+                  value="yes"
+                  onChange={handleWorkExperienceSelection}
+                />{" "}
+                Yes
               </label>
-              {fields.map((field, index) => (
-                <div className="flex items-center" key={field.id}>
-                  <input
-                    type="text"
-                    placeholder="Enter a skill"
-                    className="input input-bordered mr-2"
-                    required
-                    {...register(`skills.${index}.name`)}
-                  />
+              <label className="ml-4">
+                <input
+                  type="radio"
+                  name="hasExperience"
+                  value="no"
+                  onChange={handleWorkExperienceSelection}
+                />{" "}
+                No
+              </label>
+            </div>
+            {(hasWorkExperience === "yes" || experienceList.length > 0) && (
+              <div>
+                <p>Add your previous job experience</p>
+                <div className="">
+                  {Array.isArray(experienceList) &&
+                    experienceList.length > 0 &&
+                    experienceList.map((item, index) => (
+                      <div key={index}>
+                        <button
+                          className="mt-6 btn btn-outline btn-error"
+                          onClick={() => handleRemoveExperience(index)}
+                        >
+                          - Remove
+                        </button>
+                        <div className="border p-3 my-5 rounded-lg">
+                          <div className="w-full">
+                            <label className="label-text">Position Title</label>
+                            <input
+                              name="title"
+                              className="input input-bordered w-full"
+                              value={item.title}
+                              onChange={(e) => handleExperienceChange(index, e)}
+                            />
+                          </div>
+                          <div className="w-full">
+                            <label className="label-text">Company Name</label>
+                            <input
+                              name="companyName"
+                              className="input input-bordered w-full"
+                              value={item.companyName}
+                              onChange={(e) => handleExperienceChange(index, e)}
+                            />
+                          </div>
+                          <div>
+                            <label className="label-text">District</label>
+                            <input
+                              name="district"
+                              className="input input-bordered w-full"
+                              value={item.district}
+                              onChange={(e) => handleExperienceChange(index, e)}
+                            />
+                          </div>
+                          <div className="w-full">
+                            <label className="label-text">Division</label>
+                            <input
+                              name="division"
+                              className="input input-bordered w-full"
+                              value={item.division}
+                              onChange={(e) => handleExperienceChange(index, e)}
+                            />
+                          </div>
+                          <div className="w-full">
+                            <label className="label-text">Start Date</label>
+                            <input
+                              name="startDate"
+                              className="input input-bordered w-full"
+                              type="date"
+                              value={item.startDate}
+                              onChange={(e) => handleExperienceChange(index, e)}
+                            />
+                          </div>
+                          <div className="w-full flex items-center justify-start my-3">
+                            
+                              <input
+                                name="currentlyWorking"
+                                type="checkbox"
+                                className="checkbox"
+                                checked={item.currentlyWorking}
+                                onChange={(e) =>
+                                  handleExperienceChange(index, e)
+                                }
+                              />{" "}
+                              <label className="">
+                              Currently Working Here
+                            </label>
+                          </div>
+                          {!item.currentlyWorking && (
+                            <div className="w-full">
+                              <label className="label-text">End Date</label>
+                              <input
+                                name="endDate"
+                                type="date"
+                                className="input input-bordered w-full"
+                                value={item.endDate}
+                                onChange={(e) =>
+                                  handleExperienceChange(index, e)
+                                }
+                              />
+                            </div>
+                          )}
+                          <div className=" my-4">
+                            <label className="label-text">Work Summery</label>
+                            <div className="flex justify-end">
+                            <button
+                              className="btn btn-sm btn-secondary btn-outline"
+                              onClick={() => GenerateWorkSummeryFromAI(e,index)}
+                            >
+                              Write Work Summery With AI
+                            </button></div>
+                            <ReactQuill
+                              theme="snow"
+                              defaultValue={item?.workSummery}
+                              value={workSummery}
+                              formats={[
+                                "header",
+                                "font",
+                                "size",
+                                "bold",
+                                "italic",
+                                "underline",
+                                "strike",
+                                "blockquote",
+                                "list",
+                                "bullet",
+                                "indent",
+                                "link",
+                                "image",
+                                "video",
+                              ]}
+                              placeholder="Write something about your work experience in this company..."
+                              modules={modules}
+                              onChange={(content)=>{setWorkSummery(content);handleWorkSummery(index)}}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+                <div className="flex justify-between">
                   <button
-                    type="button"
-                    className="btn"
-                    onClick={() => remove(index)}
+                    onClick={addNewExperience}
+                    className="text-primary btn btn-outline"
                   >
-                    Remove
+                    + Add
                   </button>
                 </div>
-              ))}
-              <button
-                type="button"
-                className="btn"
-                onClick={() => append({ name: "" })}
-              >
-                Add Skills
-              </button>
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Contact Number</span>
-              </label>
-              <input
-                type="number"
-                name="contactNumber"
-                placeholder="contact number"
-                className="input input-bordered"
-                required
-                {...register("contactNumber")}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Address</span>
-              </label>
-              <textarea
-                name="userAddress"
-                placeholder="user address"
-                className="textarea textarea-bordered"
-                required
-                {...register("userAddress")}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">
-                  Job Experience(Write in Details)
-                </span>
-              </label>
-              <textarea
-                name="jobExperience"
-                placeholder="job experience"
-                className="textarea textarea-bordered"
-                required
-                {...register("jobExperience")}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Date Of Birth</span>
-              </label>
-              <input
-                type="date"
-                name="date"
-                placeholder="11-27-2003"
-                className="input input-bordered"
-                required
-                {...register("date")}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Portfolio Website (Optional)</span>
-              </label>
-              <input
-                type="text"
-                name="portfolio"
-                placeholder="www.portfolio.com"
-                className="input input-bordered"
-                {...register("portfolio")}
-              />
-            </div>
-        {!websiteUser?.userProfilePhotoURL && <div className="form-control">
-          <label className="label">
-            <span className="label-text">Profile Photo</span>
-          </label>
-          <input
-            type="file"
-            name="profilePhoto"
-            className="file-input file-input-bordered w-full max-w-xs"
-            required
-            onChange={(e) => handleFileChange(e, setProfilePhoto)}
-          />
-          </div>}
-            {!websiteUser?.userResumeURL && <div className="form-control">
-              <label className="label">
-                <span className="label-text">
-                  Upload Your Resume in Picture Format
-                </span>
-              </label>
-              <input
-                type="file"
-                name="userResume"
-                className="file-input file-input-bordered w-full max-w-xs"
-                required
-                onChange={(e) => handleFileChange(e, setResume)}
-              />
-            </div>}
+                {/* education */}
+                <div className="mt-8">
+                  <h1 className="text-2xl font-bold">
+                    Educational Info
+                  </h1>
+                  {educationalList.map((item, index) => (
+                    <div className="">
+                      <button
+                        className="mt-6 btn btn-outline btn-error"
+                        onClick={() => handleRemoveEducation(index)}
+                      >
+                        - Remove
+                      </button>
+                      <div className="">
+                        <div className="w-full">
+                          <label className="label-text">
+                            Institute/University
+                          </label>
+                          <input
+                            className="input input-bordered w-full"
+                            name="universityName"
+                            defaultValue={item?.universityName || ""}
+                            onChange={(e) => handleEducationChange(e, index)}
+                            placeholder="BUET"
+                          />
+                        </div>
+                        <div className="">
+                          <label className="label-text">Degree</label>
+                          <input
+                            name="degree"
+                            defaultValue={item?.degree || ""}
+                            className="input input-bordered w-full"
+                            onChange={(e) => handleEducationChange(e, index)}
+                            placeholder="B.Sc in Engineering"
+                          />
+                        </div>
+                        <div className="">
+                          <label className="label-text">Major</label>
+                          <input
+                            className="input input-bordered w-full"
+                            name="major"
+                            defaultValue={item?.major || ""}
+                            onChange={(e) => handleEducationChange(e, index)}
+                            placeholder="Civil Engineering"
+                          />
+                        </div>
+                        <div>
+                          <div className="">
+                            <label className="label-text">Start Date</label>
+                            <input
+                              name="startDate"
+                              type="date"
+                              className="input input-bordered w-full"
+                              defaultValue={item?.startDate || ""}
+                              onChange={(e) => handleEducationChange(e, index)}
+                              placeholder="mm-dd-yyyy"
+                            />
+                          </div>
+                          <div className="">
+                            <label className="label-text text-right justify-end">
+                              End Date(If currently studying then give the
+                              approximate date)
+                            </label>
+                            <input
+                              name="endDate"
+                              type="date"
+                              defaultValue={item?.endDate || ""}
+                              className="input input-bordered w-full"
+                              onChange={(e) => handleEducationChange(e, index)}
+                              placeholder="mm-dd-yyyy"
+                            />
+                          </div>
+                        </div>
+                        <div className="">
+                          <label className="label-text">
+                            Short description (Highlight your learning,
+                            achievements etc)
+                          </label>
+                          <textarea
+                            name="description"
+                            type="text"
+                            className="textarea textarea-bordered w-full"
+                            defaultValue={item?.description || ""}
+                            onChange={(e) => handleEducationChange(e, index)}
+                            placeholder="projects, activities etc"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={handleAddEducation}
+                    className="text-primary btn btn-outline"
+                  >
+                    + Add
+                  </button>
+                </div>
+                {/* skills */}
+                <h2 className="text-2xl font-bold">Find skills those you may know </h2>
+                <div className="">
+                  {skillsList.map((skill, index) => (
+                    <div className="border my-4 rounded-sm p-3">
+                      <button
+                        className="mt-6 btn btn-error btn-outline"
+                        onClick={() => handleRemoveSkill(index)}
+                      >
+                        - Remove
+                      </button>
+                      <div className="">
+                        <div className="">
+                          <label className="label-text">Skill</label>
+                          <input
+                            name="name"
+                            type="text"
+                            className="input input-bordered w-full"
+                            defaultValue={skill?.name || ""}
+                            onChange={(e) => handleSkillChange(e, index)}
+                            placeholder="React"
+                          />
+                        </div>
+                        <div className="">
+                          <label className="label-text">
+                            Rating of this skill according to you (Out of 100)
+                          </label>
+                          <input
+                            name="rating"
+                            type="number"
+                            className="input input-bordered w-full"
+                            defaultValue={skill?.rating || ""}
+                            onChange={(e) => handleSkillChange(e, index)}
+                            placeholder="85"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between">
+                  <button
+                    onClick={handleAddSkill}
+                    className="text-primary btn btn-outline"
+                  >
+                    + Add
+                  </button>
+                </div>
+              </div>
+            )}
+            {!websiteUser?.userProfilePhotoURL && (
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Profile Photo</span>
+                </label>
+                <input
+                  type="file"
+                  name="profilePhoto"
+                  className="file-input file-input-bordered w-full max-w-xs"
+                  required
+                  onChange={(e) => handleFileChange(e, setProfilePhoto)}
+                />
+              </div>
+            )}
           </>
         )}
-        {(selectedValue === "entrepreneur" ||websiteUser?.role=== "entrepreneur") && (
+        {(selectedValue === "entrepreneur" ||
+          websiteUser?.role === "entrepreneur") && (
           <>
             <div className="form-control">
               <label className="label">
@@ -432,34 +955,40 @@ const UpdateUserInfo = (props) => {
                 {...register("companyWebsite")}
               />
             </div>
-            {!websiteUser?.userProfilePhotoURL &&<div className="form-control">
-              <label className="label">
-                <span className="label-text">Profile Photo</span>
-              </label>
-              <input
-                type="file"
-                name="profilePhoto"
-                className="file-input file-input-bordered w-full max-w-xs"
-                required
-                onChange={(e) => handleFileChange(e, setProfilePhoto)}
-              />
-            </div>}
-            {!websiteUser?.companyLogoUrl && <div className="form-control">
-              <label className="label">
-                <span className="label-text">Upload Your Startup's logo</span>
-              </label>
-              <input
-                type="file"
-                name="companyLogo"
-                className="file-input file-input-bordered w-full max-w-xs"
-                required
-                onChange={(e) => handleFileChange(e, setCompanyLogo)}
-              />
-            </div>}
+            {!websiteUser?.userProfilePhotoURL && (
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Profile Photo</span>
+                </label>
+                <input
+                  type="file"
+                  name="profilePhoto"
+                  className="file-input file-input-bordered w-full max-w-xs"
+                  required
+                  onChange={(e) => handleFileChange(e, setProfilePhoto)}
+                />
+              </div>
+            )}
+            {!websiteUser?.companyLogoUrl && (
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Upload Your Startup's logo</span>
+                </label>
+                <input
+                  type="file"
+                  name="companyLogo"
+                  className="file-input file-input-bordered w-full max-w-xs"
+                  required
+                  onChange={(e) => handleFileChange(e, setCompanyLogo)}
+                />
+              </div>
+            )}
           </>
         )}
         <div className="form-control mt-6">
-          <button className="btn btn-primary" type="submit">{websiteUser ? "Update Information" : "Add Information"}</button>
+          <button className="btn btn-primary" type="submit">
+            {websiteUser ? "Update Information" : "Add Information"}
+          </button>
         </div>
       </form>
     </div>
