@@ -1,18 +1,23 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import useUserInfoFromMongodb from "../../hooks/useUserInfoFromMongodb";
+import { useNavigate } from "react-router-dom";
 
-const PreviewCV = (props) => {
+const PreviewCV = ({show}) => {
   const [websiteUser, refetch, isLoading] = useUserInfoFromMongodb();
   if (isLoading) {
     return <span className="loading"></span>;
   }
+  const navigate=useNavigate();
   useEffect(() => {
     refetch();
+    if (!websiteUser.CVSummery) {
+      return navigate('/dashboard/editCV')
+    }
   }, []);
   return (
     <div className="container mx-auto max-w-4xl">
-      <h1>
+      <h1 hidden={!show}>
         The final version of your CV is Here. This CV will see your recruiter.
       </h1>
       <div className="mt-16">
@@ -67,7 +72,7 @@ const PreviewCV = (props) => {
                 </h2>
                 <div
                   className="text-xs my-2"
-                  dangerouslySetInnerHTML={{ __html: exp?.workSummary }}
+                  dangerouslySetInnerHTML={{ __html: exp?.workSummery }}
                 ></div>
               </div>
             ))}

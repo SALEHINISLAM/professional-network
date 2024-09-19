@@ -33,10 +33,13 @@ export const jobSeekerNavlink = (
       <NavLink to={"/dashboard/appliedJobs"}>Applied Jobs</NavLink>
     </li>
     <li>
+      <NavLink to={"/dashboard/careerAdvice"}>Career Advice</NavLink>
+    </li>
+    <li>
       <NavLink to={"/dashboard/myCV"}>My CV</NavLink>
     </li>
     <li>
-      <NavLink to={"/dashboard/editCV"}>editCV</NavLink>
+      <NavLink to={"/dashboard/editCV"}>edit CV</NavLink>
     </li>
     <li>
       <NavLink to={"/dashboard/help"}>help</NavLink>
@@ -63,6 +66,7 @@ export const entrepreneurNavlink=<>
       <NavLink to={"/dashboard/help"}>Help</NavLink>
     </li>
 </>
+
 export const adminNavLink=<>
 <li>
   <NavLink to={'/dashboard/adminHome'}>
@@ -80,3 +84,20 @@ export const adminNavLink=<>
   </NavLink>
 </li>
 </>
+export const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["clean"],
+  ],
+  clipboard: {
+    matchVisual: false,
+  },
+};

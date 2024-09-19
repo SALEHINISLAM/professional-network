@@ -75,10 +75,10 @@ const CustomCV = (props) => {
       <h1 className="text-5xl font-extrabold text-center my-10">My CV</h1>
       <h2 className="text-xl font-bold">Choose theme color for your CV</h2>
       <SketchPicker
-        color={websiteUser?.themeColor || themeColor}
+        color={themeColor}
         onChangeComplete={(color) => setThemeColor(color.hex)}
       />
-      <h1 className="text-xl font-bold">Which Title Choose Match You?</h1>
+      <h1 className="text-xl font-bold mt-6">Which Title Choose Match You?</h1>
       <input
         type="text"
         name="jobTitle"
@@ -144,7 +144,7 @@ const CustomCV = (props) => {
           Create CV
         </button>
       )}
-      <div className="max-w-3xl mx-auto">{showCV && <PreviewCV />}</div>
+      <div className="max-w-3xl mx-auto">{showCV && <PreviewCV show={true}/>}</div>
     </div>
   );
 };

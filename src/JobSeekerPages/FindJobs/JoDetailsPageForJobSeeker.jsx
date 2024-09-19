@@ -24,6 +24,9 @@ const JoDetailsPageForJobSeeker = (props) => {
   console.log(exactJob, "from job details");
   const handleApplyNow = async (userId, jobId) => {
     console.log(userId, jobId);
+    if (!user.CVSummery) {
+      return Swal.fire("Please complete your CV");
+    }
     const response = await axiosPublic.post(`/user/${userId}/job/${jobId}`);
     console.log(response.data);
     if (response.data.insertedId) {

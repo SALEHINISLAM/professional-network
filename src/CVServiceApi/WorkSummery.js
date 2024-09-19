@@ -26,18 +26,6 @@ export const WorkSummaryChatSession = model.startChat({
     {
       role: "user",
       parts: [
-        { text: "Position Title: Full Stack Developer. Depends on position title give me 5-7 bullet points for my experience in resume, give me result in html format\n" },
-      ],
-    },
-    {
-      role: "model",
-      parts: [
-        { text: "Please provide me with the specific position title you are applying for, and I will generate 5-7 bullet points tailored to that role.  For example, tell me if you are applying for a \"Full Stack Developer\", \"Front End Developer\", \"Back End Developer\", or something more specific like \"React Developer\" or \"Node.js Developer\". \n\nThe more information you give me, the better I can help you create compelling bullet points for your resume. \n" },
-      ],
-    },
-    {
-      role: "user",
-      parts: [
         { text: "Position Title: Full Stack Developer. Depends on position title give me 5-7 bullet points for my experience in resume, give me result in html format" },
       ],
     },

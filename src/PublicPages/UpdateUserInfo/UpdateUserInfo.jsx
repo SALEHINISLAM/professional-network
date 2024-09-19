@@ -9,6 +9,7 @@ import useUserInfoFromMongodb from "../../hooks/useUserInfoFromMongodb";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { WorkSummaryChatSession } from "../../CVServiceApi/WorkSummery";
+import { modules } from "../../SharedComponents/DashboardNavlink";
 
 const UpdateUserInfo = (props) => {
   const { user } = useContext(AuthContext);
@@ -92,7 +93,6 @@ const UpdateUserInfo = (props) => {
       );
       setValue("contactNumber", websiteUser.contactNumber || "");
       setValue("userAddress", websiteUser.userAddress || "");
-      setValue("jobExperience", websiteUser.jobExperience || "");
       setValue("date", websiteUser.date || "");
       setValue("portfolio", websiteUser.portfolio || "");
       setValue("experience", websiteUser.experience || [formField]);
@@ -109,6 +109,15 @@ const UpdateUserInfo = (props) => {
           },
         ]
       );
+      setValue("firstName", websiteUser.firstName || "")
+      setValue("lastName",websiteUser.lastName || "")
+      setValue("jobTitle", websiteUser.jobTitle || "")
+      setValue("address", websiteUser.address || "")
+      setValue("phone", websiteUser.phone || "")
+      setValue("userEmail", websiteUser.userEmail || "")
+      setValue("portfolio", websiteUser.portfolio || "")
+      setValue("linkedIn", websiteUser.linkedIn ||"")
+      setValue("facebook",websiteUser.facebook || "")
       setEducationalList(
         websiteUser.education || [
           {
@@ -134,7 +143,6 @@ const UpdateUserInfo = (props) => {
   }, [websiteUser, user, setValue]);
 
   const GenerateWorkSummeryFromAI = async (e,index) => {
-    e.preventDefault()
     if (!experienceList[index].title) {
       return Swal.fire("Please add position title");
     }
@@ -185,11 +193,13 @@ const UpdateUserInfo = (props) => {
     const UpdateExperienceList=[...experienceList];
     UpdateExperienceList[index].workSummery=workSummery;
   }
-  const addNewExperience = () => {
+  const handleAddNewExperience = () => {
+    //e.preventDefault();
     setExperienceList([...experienceList, { ...formField }]);
   };
 
   const handleAddSkill = () => {
+    //e.preventDefault();
     const updatedList = [
       ...skillsList,
       {
@@ -201,11 +211,13 @@ const UpdateUserInfo = (props) => {
   };
 
   const handleRemoveExperience = (index) => {
+    //e.preventDefault();
     const updatedExperienceList = experienceList.filter((_, i) => i !== index);
     setExperienceList(updatedExperienceList);
   };
 
   const handleAddEducation = () => {
+    //e.preventDefault();
     const updatedList = [
       ...educationalList,
       {
@@ -221,11 +233,13 @@ const UpdateUserInfo = (props) => {
   };
 
   const handleRemoveEducation = (index) => {
+    //e.preventDefault();
     const updatedList = educationalList.filter((_, i) => i !== index);
     setEducationalList(updatedList);
   };
 
   const handleRemoveSkill = (index) => {
+    //e.preventDefault();
     const updatedList = skillsList.filter((_, i) => i !== index);
     setSkillsList(updatedList);
   };
@@ -258,7 +272,7 @@ const UpdateUserInfo = (props) => {
   };
 
   const onSubmit = async (data) => {
-
+    //e.preventDefault()
     try {
       let logoUrl = websiteUser?.companyLogoUrl || "";
       let idCardUrl = websiteUser?.employerIdCardUrl || "";
@@ -283,7 +297,9 @@ const UpdateUserInfo = (props) => {
         experience: experienceList,
         skills: skillsList,
         education: educationalList,
+        isAdviceUpdated:false
       };
+      
       console.log(message);
       if (websiteUser?.role) {
         const response = await axiosPublic.put(
@@ -312,28 +328,12 @@ const UpdateUserInfo = (props) => {
       console.log(err, "from update user");
     }
   };
+
   const handleWorkExperienceSelection = (e) => {
     setHasWorkExperience(e.target.value);
     console.log(hasWorkExperience);
   };
 
-  const modules = {
-    toolbar: [
-      [{ header: "1" }, { header: "2" }],
-      [{ size: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      ["clean"],
-    ],
-    clipboard: {
-      matchVisual: false,
-    },
-  };
   return (
     <div className="max-w-sm mx-auto py-16">
       {!websiteUser?.role && (
@@ -562,7 +562,6 @@ const UpdateUserInfo = (props) => {
                   name="linkedIn"
                   placeholder="linkedin.com/xxxxx"
                   className="input input-bordered"
-                  
                   {...register("linkedIn")}
                 />
               </div>
@@ -578,7 +577,8 @@ const UpdateUserInfo = (props) => {
                 />
               </div>
             </div>
-            <h1 className="font-bold text-lg">Work Experience</h1>
+
+            <h1 className="font-bold text-2xl">Work Experience</h1>
             <p>Do you have previous job experience?</p>
             <div className="my-4">
               <label className="label-text">
@@ -586,6 +586,7 @@ const UpdateUserInfo = (props) => {
                   type="radio"
                   name="hasExperience"
                   value="yes"
+                  checked={hasWorkExperience==="yes"}
                   onChange={handleWorkExperienceSelection}
                 />{" "}
                 Yes
@@ -595,6 +596,7 @@ const UpdateUserInfo = (props) => {
                   type="radio"
                   name="hasExperience"
                   value="no"
+                  checked={hasWorkExperience==="no"}
                   onChange={handleWorkExperienceSelection}
                 />{" "}
                 No
@@ -602,7 +604,7 @@ const UpdateUserInfo = (props) => {
             </div>
             {(hasWorkExperience === "yes" || experienceList.length > 0) && (
               <div>
-                <p>Add your previous job experience</p>
+                <p>{experienceList.length>0 ? "Edit your previous job experience":"Add your previous job experience"}</p>
                 <div className="">
                   {Array.isArray(experienceList) &&
                     experienceList.length > 0 &&
@@ -610,7 +612,7 @@ const UpdateUserInfo = (props) => {
                       <div key={index}>
                         <button
                           className="mt-6 btn btn-outline btn-error"
-                          onClick={() => handleRemoveExperience(index)}
+                          onClick={(e) =>{ e.stopPropagation();handleRemoveExperience(index)}}
                         >
                           - Remove
                         </button>
@@ -620,7 +622,7 @@ const UpdateUserInfo = (props) => {
                             <input
                               name="title"
                               className="input input-bordered w-full"
-                              value={item.title}
+                              value={item.title || ""}
                               onChange={(e) => handleExperienceChange(index, e)}
                             />
                           </div>
@@ -629,7 +631,7 @@ const UpdateUserInfo = (props) => {
                             <input
                               name="companyName"
                               className="input input-bordered w-full"
-                              value={item.companyName}
+                              value={item.companyName || ""}
                               onChange={(e) => handleExperienceChange(index, e)}
                             />
                           </div>
@@ -638,7 +640,7 @@ const UpdateUserInfo = (props) => {
                             <input
                               name="district"
                               className="input input-bordered w-full"
-                              value={item.district}
+                              value={item.district || ""}
                               onChange={(e) => handleExperienceChange(index, e)}
                             />
                           </div>
@@ -647,7 +649,7 @@ const UpdateUserInfo = (props) => {
                             <input
                               name="division"
                               className="input input-bordered w-full"
-                              value={item.division}
+                              value={item.division || ""}
                               onChange={(e) => handleExperienceChange(index, e)}
                             />
                           </div>
@@ -657,7 +659,7 @@ const UpdateUserInfo = (props) => {
                               name="startDate"
                               className="input input-bordered w-full"
                               type="date"
-                              value={item.startDate}
+                              value={item.startDate || ""}
                               onChange={(e) => handleExperienceChange(index, e)}
                             />
                           </div>
@@ -667,7 +669,7 @@ const UpdateUserInfo = (props) => {
                                 name="currentlyWorking"
                                 type="checkbox"
                                 className="checkbox"
-                                checked={item.currentlyWorking}
+                                checked={item.currentlyWorking || false}
                                 onChange={(e) =>
                                   handleExperienceChange(index, e)
                                 }
@@ -683,7 +685,7 @@ const UpdateUserInfo = (props) => {
                                 name="endDate"
                                 type="date"
                                 className="input input-bordered w-full"
-                                value={item.endDate}
+                                value={item.endDate || ""}
                                 onChange={(e) =>
                                   handleExperienceChange(index, e)
                                 }
@@ -694,14 +696,15 @@ const UpdateUserInfo = (props) => {
                             <label className="label-text">Work Summery</label>
                             <div className="flex justify-end">
                             <button
+                            type="button"
                               className="btn btn-sm btn-secondary btn-outline"
-                              onClick={() => GenerateWorkSummeryFromAI(e,index)}
+                              onClick={(e) =>{e.stopPropagation()
+                                ; GenerateWorkSummeryFromAI(e,index)}}
                             >
                               Write Work Summery With AI
                             </button></div>
                             <ReactQuill
                               theme="snow"
-                              defaultValue={item?.workSummery}
                               value={workSummery}
                               formats={[
                                 "header",
@@ -730,7 +733,8 @@ const UpdateUserInfo = (props) => {
                 </div>
                 <div className="flex justify-between">
                   <button
-                    onClick={addNewExperience}
+                  type="button"
+                    onClick={(e)=>{e.stopPropagation();handleAddNewExperience()}}
                     className="text-primary btn btn-outline"
                   >
                     + Add
@@ -744,8 +748,9 @@ const UpdateUserInfo = (props) => {
                   {educationalList.map((item, index) => (
                     <div className="">
                       <button
+                      type="button"
                         className="mt-6 btn btn-outline btn-error"
-                        onClick={() => handleRemoveEducation(index)}
+                        onClick={(e) =>{e.stopPropagation(); handleRemoveEducation(index)}}
                       >
                         - Remove
                       </button>
@@ -757,7 +762,7 @@ const UpdateUserInfo = (props) => {
                           <input
                             className="input input-bordered w-full"
                             name="universityName"
-                            defaultValue={item?.universityName || ""}
+                            value={item?.universityName || ""}
                             onChange={(e) => handleEducationChange(e, index)}
                             placeholder="BUET"
                           />
@@ -766,7 +771,7 @@ const UpdateUserInfo = (props) => {
                           <label className="label-text">Degree</label>
                           <input
                             name="degree"
-                            defaultValue={item?.degree || ""}
+                            value={item?.degree || ""}
                             className="input input-bordered w-full"
                             onChange={(e) => handleEducationChange(e, index)}
                             placeholder="B.Sc in Engineering"
@@ -777,7 +782,7 @@ const UpdateUserInfo = (props) => {
                           <input
                             className="input input-bordered w-full"
                             name="major"
-                            defaultValue={item?.major || ""}
+                            value={item?.major || ""}
                             onChange={(e) => handleEducationChange(e, index)}
                             placeholder="Civil Engineering"
                           />
@@ -789,7 +794,7 @@ const UpdateUserInfo = (props) => {
                               name="startDate"
                               type="date"
                               className="input input-bordered w-full"
-                              defaultValue={item?.startDate || ""}
+                              value={item?.startDate || ""}
                               onChange={(e) => handleEducationChange(e, index)}
                               placeholder="mm-dd-yyyy"
                             />
@@ -802,7 +807,7 @@ const UpdateUserInfo = (props) => {
                             <input
                               name="endDate"
                               type="date"
-                              defaultValue={item?.endDate || ""}
+                              value={item?.endDate || ""}
                               className="input input-bordered w-full"
                               onChange={(e) => handleEducationChange(e, index)}
                               placeholder="mm-dd-yyyy"
@@ -818,7 +823,7 @@ const UpdateUserInfo = (props) => {
                             name="description"
                             type="text"
                             className="textarea textarea-bordered w-full"
-                            defaultValue={item?.description || ""}
+                            value={item?.description || ""}
                             onChange={(e) => handleEducationChange(e, index)}
                             placeholder="projects, activities etc"
                           />
@@ -827,7 +832,8 @@ const UpdateUserInfo = (props) => {
                     </div>
                   ))}
                   <button
-                    onClick={handleAddEducation}
+                  type="button"
+                    onClick={(e)=>{e.stopPropagation();handleAddEducation()}}
                     className="text-primary btn btn-outline"
                   >
                     + Add
@@ -840,7 +846,7 @@ const UpdateUserInfo = (props) => {
                     <div className="border my-4 rounded-sm p-3">
                       <button
                         className="mt-6 btn btn-error btn-outline"
-                        onClick={() => handleRemoveSkill(index)}
+                        onClick={(e) => {e.stopPropagation();handleRemoveSkill(index)}}
                       >
                         - Remove
                       </button>
@@ -851,7 +857,7 @@ const UpdateUserInfo = (props) => {
                             name="name"
                             type="text"
                             className="input input-bordered w-full"
-                            defaultValue={skill?.name || ""}
+                            value={skill?.name || ""}
                             onChange={(e) => handleSkillChange(e, index)}
                             placeholder="React"
                           />
@@ -864,7 +870,7 @@ const UpdateUserInfo = (props) => {
                             name="rating"
                             type="number"
                             className="input input-bordered w-full"
-                            defaultValue={skill?.rating || ""}
+                            value={skill?.rating || ""}
                             onChange={(e) => handleSkillChange(e, index)}
                             placeholder="85"
                           />
@@ -875,7 +881,7 @@ const UpdateUserInfo = (props) => {
                 </div>
                 <div className="flex justify-between">
                   <button
-                    onClick={handleAddSkill}
+                    onClick={(e)=>{e.stopPropagation();handleAddSkill()}}
                     className="text-primary btn btn-outline"
                   >
                     + Add
